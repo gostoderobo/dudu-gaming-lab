@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dudu Gaming Lab</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      color: #f5f7ff;
+      background:
+        radial-gradient(ellipse at top, #25205b, transparent 55%),
+        #090c18;
+    }
+
+    header {
+      padding: 24px 16px;
+      text-align: center;
+      border-bottom: 1px solid #34345c;
+    }
+
+    header h1 {
+      color: #61efff;
+      text-shadow: 0 0 18px #397dff;
+      margin: 0 0 10px;
+    }
+
+    header p { color: #b8c2e8; }
+
+    main {
+      max-width: 760px;
+      margin: auto;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #151a30;
+      border: 1px solid #373b65;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 24px #15114a55;
+    }
+
+    h2 { color: #c69aff; }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 18px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(100deg, #714cff, #b14dff);
+      cursor: pointer;
+      transition: transform .15s, filter .15s;
+    }
+
+    button:hover {
+      transform: scale(1.04);
+      filter: brightness(1.2);
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      gap: 12px;
+      flex-wrap: wrap;
+      text-align: center;
+    }
+
+    .number {
+      display: block;
+      font-size: 28px;
+      color: #61efff;
+      margin-top: 6px;
+    }
+
+    #arena {
+      position: relative;
+      height: 280px;
+      overflow: hidden;
+      background: #090e21;
+      border: 1px solid #3c467b;
+      border-radius: 14px;
+      margin: 18px 0;
+    }
+
+    #target {
+      position: absolute;
+      display: none;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 0 8%, #60f5ff 20%, #7450ff 70%);
+      box-shadow: 0 0 20px #61efff;
+    }
+
+    #message {
+      color: #c7d0f3;
+      min-height: 24px;
+    }
+
+    footer {
+      padding: 22px;
+      text-align: center;
+      color: #8994bb;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>⚡ DUDU GAMING LAB</h1>
+    <p>Meu site. Meus jogos. Minhas ideias.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>🚀 Bem-vindo ao laboratório!</h2>
+      <p>Este site foi criado por mim usando HTML, CSS e JavaScript.</p>
+      <button onclick="mostrarInfo()">Descobrir meu laboratório</button>
+      <p id="info"></p>
+    </section>
+
+    <section class="card">
+      <h2>🎯 Caça ao Alvo</h2>
+      <p>Clique no alvo neon o máximo de vezes que conseguir em 20 segundos!</p>
+
+      <div class="stats">
+        <div>Pontos <span class="number" id="score">0</span></div>
+        <div>Tempo <span class="number" id="time">20</span></div>
+        <div>Recorde <span class="number" id="record">0</span></div>
+      </div>
+
+      <button id="start" onclick="startGame()">▶ Iniciar jogo</button>
+
+      <div id="arena">
+        <button id="target" aria-label="Acertar alvo"
+          onclick="hitTarget()"></button>
+      </div>
+
+      <p id="message" aria-live="polite">Clique em Iniciar jogo para começar!</p>
+    </section>
+  </main>
+
+  <footer>Feito com criatividade e código 💜</footer>
+
+  <script>
+    let score = 0;
+    let time = 20;
+    let record = 0;
+    let playing = false;
+    let timer = null;
+
+    const target = document.getElementById("target");
+    const arena = document.getElementById("arena");
+
+    function mostrarInfo() {
+      document.getElementById("info").textContent =
+        "Aqui é onde minhas ideias viram projetos! 🎮";
+    }
+
+    function moveTarget() {
+      const maxX = arena.clientWidth - target.offsetWidth;
+      const maxY = arena.clientHeight - target.offsetHeight;
+
+      target.style.left = Math.floor(Math.random() * (maxX + 1)) + "px";
+      target.style.top = Math.floor(Math.random() * (maxY + 1)) + "px";
+    }
+
+    function startGame() {
+      if (playing) return;
+
+      score = 0;
+      time = 20;
+      playing = true;
+
+      document.getElementById("score").textContent = score;
+      document.getElementById("time").textContent = time;
+      document.getElementById("message").textContent =
+        "Valendo! Acerte o alvo!";
+      document.getElementById("start").disabled = true;
+
+      target.style.display = "block";
+      moveTarget();
+
+      timer = setInterval(function() {
+        time--;
+        document.getElementById("time").textContent = time;
+
+        if (time <= 0) endGame();
+      }, 1000);
+    }
+
+    function hitTarget() {
+      if (!playing) return;
+
+      score++;
+      document.getElementById("score").textContent = score;
+
+      if (score > record) {
+        record = score;
+        document.getElementById("record").textContent = record;
+      }
+
+      moveTarget();
+    }
+
+    function endGame() {
+      playing = false;
+      clearInterval(timer);
+      target.style.display = "none";
+      document.getElementById("start").disabled = false;
+      document.getElementById("message").textContent =
+        "Fim de jogo! Você fez " + score +
+        " pontos. Tente bater seu recorde!";
+    }
+  </script>
+</body>
+</html>
